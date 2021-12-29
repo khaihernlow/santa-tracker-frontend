@@ -4985,7 +4985,38 @@
   {
     "id": "crozet_islands",
     "extract": "The Crozet Islands are a sub-Antarctic archipelago of small islands in the southern Indian Ocean.",
-    "scratchUsers": []
+    "scratchUsers": [
+      {
+        "username": "AnimationsScratch",
+        "scratchID": 36078451,
+        "region": "France",
+        "profileIcon": "https://cdn2.scratch.mit.edu/get_image/user/36078451_60x60.png"
+      },
+      {
+        "username": "Judpomme",
+        "scratchID": 38934170,
+        "region": "France",
+        "profileIcon": "https://cdn2.scratch.mit.edu/get_image/user/38934170_60x60.png"
+      },
+      {
+        "username": "MrA-",
+        "scratchID": 75819339,
+        "region": "France",
+        "profileIcon": "https://cdn2.scratch.mit.edu/get_image/user/75819339_60x60.png"
+      },
+      {
+        "username": "NilsTheBest",
+        "scratchID": 28708258,
+        "region": "France",
+        "profileIcon": "https://cdn2.scratch.mit.edu/get_image/user/28708258_60x60.png"
+      },
+      {
+        "username": "maDU59_",
+        "scratchID": 37635526,
+        "region": "France",
+        "profileIcon": "https://cdn2.scratch.mit.edu/get_image/user/37635526_60x60.png"
+      }
+    ]
   },
   {
     "id": "prince_edward_islands",
