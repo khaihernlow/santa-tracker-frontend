@@ -1,6 +1,7 @@
 const santaController = (() => {
   let currTime, santaPos, trackerData, routeData, daysAdding;
   let prevMarker, currMarker, prevLat, prevLng, currLat, currLng;
+  let locationResponse, locationData;
 
   let currDate = new Date();
   daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
@@ -88,11 +89,9 @@ const santaController = (() => {
     });
 
     if (prevLat !== undefined) {
-      const locationResponse = await fetch('./locationData.json');
-      const locationData = await locationResponse.json();
       let desc = locationData[index]['extract'];
       let scratchUsers = locationData[index]['scratchUsers'];
-      console.log(scratchUsers);
+      // console.log(scratchUsers);
 
       // function to shorten a string to 3 lines
       function truncate(str, n, useWordBoundary) {
@@ -136,6 +135,12 @@ const santaController = (() => {
       trackerData = await response.json();
       routeData = trackerData.destinations;
       return routeData;
+    },
+
+    getLocationData: async () => {
+      locationResponse = await fetch('./locationData.json');
+      locationData = await locationResponse.json();
+      return;
     },
 
     findArrTime: async () => {
@@ -502,6 +507,7 @@ const controller = (async (santaCtrl, uiCtrl) => {
   uiCtrl.updateTime();
 
   routeData = await santaCtrl.getRouteAPI(); // get route data from API
+  await santaCtrl.getLocationData();
   console.log(routeData);
   santaCtrl.findArrTime().then((value) => {
     uiCtrl.updateArrTime(value);
@@ -515,7 +521,6 @@ const controller = (async (santaCtrl, uiCtrl) => {
   if (currAmtGifts == undefined) {
     currAmtGifts = santaPos.presentsDelivered;
   }
-  console.log(currAmtGifts);
   setInterval(() => {
     currAmtGifts = uiCtrl.updateGiftsCount(santaPos.timeNext, santaPos.presentsDelivered, currAmtGifts);
   }, 2000);
@@ -534,6 +539,8 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia2hhaWhlcm4iLCJhIjoiY2t4ajczaTVtMnBoazJva3k4c
 let map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/khaihern/ckxjzd7zc0qar14o1a3ubj1i4',
+  center: [40.346, 33.428],
+  zoom: 2
 });
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl(), 'top-left');
