@@ -651,3 +651,6 @@ let map = new mapboxgl.Map({
 });
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+map.dragRotate.disable(); // disable map rotation using right click + drag
+map.touchZoomRotate.disableRotation(); // disable map rotation using touch rotation gesture
+

@@ -285,6 +285,8 @@ h3 {
   font-size: 40px;
   text-shadow: 1px 1px #2e2e2e;
   transform: rotate(-3deg);
+  -webkit-user-select: none;
+  user-select: none;
 }
       
 .photos__list {
@@ -307,6 +309,7 @@ h3 {
   background-size:cover;
   border: solid 4px #fff; 
   background-color: #d6d6d6;
+  cursor: pointer;
 }
 
 .photos__list li:nth-last-child(4) {
