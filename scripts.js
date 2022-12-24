@@ -29,9 +29,10 @@ const santaController = (() => {
     timeNext: '',
     orderID: null,
     presentsDelivered: 0,
+    photos: [],
   };
 
-  const updateSantaPos = (prevLocation, nextLocation, region, currMode, timeNext, orderID, presentsDelivered) => {
+  const updateSantaPos = (prevLocation, nextLocation, region, currMode, timeNext, orderID, presentsDelivered, photos) => {
     santaPos.prevLocation = prevLocation;
     santaPos.nextLocation = nextLocation;
     santaPos.region = region;
@@ -39,6 +40,7 @@ const santaController = (() => {
     santaPos.timeNext = timeNext;
     santaPos.orderID = orderID;
     santaPos.presentsDelivered = presentsDelivered;
+    santaPos.photos = photos;
   };
 
   const plotCoords = async (index) => {
@@ -182,7 +184,7 @@ const santaController = (() => {
         }
       }
 
-      var addArrival = addDays(routeData[closestLocation]['arrival'], daysAdding);
+      let addArrival = addDays(routeData[closestLocation]['arrival'], daysAdding);
       return addArrival;
     },
 
@@ -192,10 +194,18 @@ const santaController = (() => {
       let currTime = new Date().toUTCString();
       addDeparture = addDays(new Date(routeData[0]['departure']), daysAdding);
 
+      let photos = [];
+
       // check if santa departed
       if (Date.parse(currTime) < Date.parse(addDeparture)) {
         let timeToTakeoff = calcTimeDiff(Date.parse(currTime), Date.parse(addDeparture));
         //console.log(`Santa has not take off yet! Santa will takeoff in ${timeToTakeoff} minutes`);
+
+        //Grab photos
+        photos = [];
+        routeData[0]['details']['photos'].forEach((el) => {
+          photos.push(el['url']);
+        });
 
         updateSantaPos(
           routeData[0]['city'],
@@ -204,7 +214,8 @@ const santaController = (() => {
           'Pitstop',
           Date.parse(addDeparture),
           0,
-          routeData[0]['presentsDelivered']
+          routeData[0]['presentsDelivered'],
+          photos,
         );
         return santaPos;
       }
@@ -215,6 +226,13 @@ const santaController = (() => {
         addDeparture = addDays(new Date(routeData[i]['departure']), daysAdding);
         if (Date.parse(currTime) < Date.parse(addArrival)) {
           //console.log(`Santa has left ${routeData[i-1]['city']} and heading to ${routeData[i]['city']}`);
+          
+          //Grab photos
+          photos = [];
+          routeData[i - 1]['details']['photos'].forEach((el) => {
+            photos.push(el['url']);
+          });
+          
           updateSantaPos(
             routeData[i - 1]['city'],
             routeData[i]['city'],
@@ -222,13 +240,21 @@ const santaController = (() => {
             'Airborne',
             Date.parse(addArrival),
             i,
-            routeData[i - 1]['presentsDelivered']
+            routeData[i - 1]['presentsDelivered'],
+            photos
           );
           plotCoords(i);
           //setViewBox(routeData[i]['location']['lat'], routeData[i]['location']['lng']);
           return santaPos;
         } else if (Date.parse(currTime) < Date.parse(addDeparture)) {
           //console.log(`Santa is currently at ${routeData[i]['city']} delivering presents`);
+
+          //Grab photos
+          photos = [];
+          routeData[i]['details']['photos'].forEach((el) => {
+            photos.push(el['url']);
+          });
+
           updateSantaPos(
             routeData[i]['city'],
             routeData[i + 1]['city'],
@@ -236,7 +262,8 @@ const santaController = (() => {
             'Pitstop',
             Date.parse(addDeparture),
             i,
-            routeData[i]['presentsDelivered']
+            routeData[i]['presentsDelivered'],
+            photos
           );
           // setViewBox(routeData[i]['location']['lat'], routeData[i]['location']['lng']);
           return santaPos;
@@ -251,10 +278,15 @@ const santaController = (() => {
     },
 
     getNextPos: () => {
-      let addArrival, addDeparture;
+      let addArrival, addDeparture, photos = [];
       if (santaPos.currMode == 'Airborne') {
         plotCoords(santaPos.orderID);
         addDeparture = addDays(new Date(routeData[santaPos.orderID]['departure']), daysAdding);
+
+        //Grab photos
+        routeData[santaPos.orderID]['details']['photos'].forEach((el) => {
+          photos.push(el['url']);
+        });
 
         updateSantaPos(
           santaPos.nextLocation,
@@ -263,10 +295,16 @@ const santaController = (() => {
           'Pitstop',
           Date.parse(addDeparture),
           santaPos.orderID,
-          routeData[santaPos.orderID]['presentsDelivered']
+          routeData[santaPos.orderID]['presentsDelivered'],
+          photos
         );
       } else if (santaPos.currMode == 'Pitstop') {
         addArrival = addDays(new Date(routeData[santaPos.orderID + 1]['arrival']), daysAdding);
+
+        //Grab photos
+        routeData[santaPos.orderID + 1]['details']['photos'].forEach((el) => {
+          photos.push(el['url']);
+        });
 
         updateSantaPos(
           santaPos.prevLocation,
@@ -275,7 +313,8 @@ const santaController = (() => {
           'Airborne',
           Date.parse(addArrival),
           santaPos.orderID + 1,
-          routeData[santaPos.orderID + 1]['presentsDelivered']
+          routeData[santaPos.orderID + 1]['presentsDelivered'],
+          photos
         );
       }
     },
@@ -369,6 +408,11 @@ const uiController = (() => {
     headerTime: '#header-item1',
     headerLoc: '#header-item2',
     status: '.status',
+    photosList: '.photos__list',
+    photoCity: '.photos__location',
+    media: '.media',
+    mediaLabels: '.media__labels',
+    mediaCTA: '.media__cta'
   };
 
   const countDown = (endDate, domString) => {
@@ -400,14 +444,18 @@ const uiController = (() => {
         } else if (domString == 'routeValues') {
           document.querySelector(DOMstrings.routeValues).innerHTML = `${hours} Hours ${minutes} Minutes`;
         }
-        if (minutes < 1 && hours < 1 && domString == 'routeValues') {
-          //console.log('over');
-          resolve('done');
-          clearInterval(x);
-        }
+        // if (minutes < 1 && hours < 1 && domString == 'routeValues') {
+        //   //console.log('over');
+        //   resolve('done');
+        //   clearInterval(x);
+        // }
 
-        if (seconds < 1 && minutes < 1 && hours < 1) {
-          //console.log('over');
+        // if (seconds < 1 && minutes < 1 && hours < 1) {
+        //   //console.log('over');
+        //   resolve('done');
+        //   clearInterval(x);
+        // }
+        if (distance <= 0) {
           resolve('done');
           clearInterval(x);
         }
@@ -455,6 +503,61 @@ const uiController = (() => {
           document.querySelector(DOMstrings.santaStatus).classList.remove('santa_sleigh');
         } catch (error) {}
       }
+    },
+
+    updatePhotos: (santaPos) => {
+      //Clear out all the previous photos
+      document.querySelector(DOMstrings.photosList).innerHTML = ' ';
+
+      //For each photos in list, add a card to the html, not to exceed 4 cards
+      let new_li = document.createElement('li');
+      new_li.className = 'photos__card';
+      santaPos.photos.every((el, index) => {
+        document.querySelector(DOMstrings.photosList).appendChild(new_li.cloneNode(true));
+        if (index == 3) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
+      //Changing the image of the photos cards
+      let photoCards = document.querySelector(DOMstrings.photosList).childNodes;
+      let photoIndex = 0;
+      for (i = 0; i < photoCards.length; i++) {
+        if (photoCards[i].nodeName.toLowerCase() == 'li') {
+          photoCards[i].style.backgroundImage = `url(${santaPos.photos[photoIndex]})`;
+          photoIndex += 1;
+        }
+      }
+
+      //Write the location of the photos
+      document.querySelector(DOMstrings.photoCity).innerHTML = `${santaPos.currMode == 'Pitstop' ? santaPos.prevLocation : santaPos.nextLocation}`;
+    },
+
+    updateMedia: () => {
+      setInterval(() => {
+        //ID of the Scratch Projects
+        let animations = [273343061, 462774091, 466337394, 89025005, 459737643, 461648228, 462911474, 226034200, 223108087, 222533289, 219473703, 211310654, 217423939, 227657131, 212304322, 213506011, 208710981, 222655860, 92500368, 274070991, 190011244, 269060133, 355074630, 41206644, 467357045];
+        let games = [137651951, 86359934, 192335511, 268933200, 265577662, 90914721, 272045498, 779552593, 349373793, 272953349, 193803200, 604421910, 620253799, 190350611, 611541710, 481290805, 38403214, 447015016, 191573221, 596470087, 15075951, 456024949, 306432816, 461334001, 452209527, 269148884, 621337245, 190343215, 355747998, 37523030, 2998709, 273304778, 608139762, 574870481, 765399719];
+      
+        //Seed the random number generator using the current UTC minute, so everyone generates the same random project
+        Math.seedrandom(new Date().getUTCMinutes());
+
+        let projectId;
+        if (new Date().getUTCMinutes() % 2 == 0) { //If the minute is even, then pick a game
+          projectId = games[Math.floor(Math.random() * games.length)];
+          document.querySelector(DOMstrings.mediaLabels).innerHTML = '• Play Christmas Game';
+          document.querySelector(DOMstrings.mediaCTA).innerHTML = 'sports_esports';
+        } else { //else pick an animation
+          projectId = animations[Math.floor(Math.random() * animations.length)];
+          document.querySelector(DOMstrings.mediaLabels).innerHTML = '• Watch Christmas Animation';
+          document.querySelector(DOMstrings.mediaCTA).innerHTML = 'play_arrow';
+        }
+
+        document.querySelector(DOMstrings.media).style.backgroundImage = `url(https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png)`;
+        document.querySelector(DOMstrings.mediaCTA).setAttribute('href', `https://scratch.mit.edu/projects/${projectId}/fullscreen/`);
+      }, 1000);
     },
 
     updateTime: () => {
@@ -508,13 +611,15 @@ const controller = (async (santaCtrl, uiCtrl) => {
 
   routeData = await santaCtrl.getRouteAPI(); // get route data from API
   await santaCtrl.getLocationData();
-  console.log(routeData);
+  //console.log(routeData);
   santaCtrl.findArrTime().then((value) => {
     uiCtrl.updateArrTime(value);
   });
 
   santaPos = await santaCtrl.getSantaPos(); // get santa position
   uiCtrl.updateStatus(santaPos);
+  uiCtrl.updatePhotos(santaPos);
+  uiCtrl.updateMedia();
   santaCtrl.drawRecentRoute(santaPos.orderID);
 
   // setinterval function
@@ -531,6 +636,7 @@ const controller = (async (santaCtrl, uiCtrl) => {
     await uiCtrl.updateRoute(santaPos);
     await santaCtrl.getNextPos();
     uiCtrl.updateStatus(santaPos);
+    uiCtrl.updatePhotos(santaPos);
     santaCtrl.drawRecentRoute(santaPos.orderID);
   }
 })(santaController, uiController);
@@ -538,7 +644,8 @@ const controller = (async (santaCtrl, uiCtrl) => {
 mapboxgl.accessToken = 'pk.eyJ1Ijoia2hhaWhlcm4iLCJhIjoiY2t4ajczaTVtMnBoazJva3k4cTMxZDQ0MCJ9.C4RBRggFv5Bv3Eq3XJmvgg';
 let map = new mapboxgl.Map({
   container: 'map',
-  style: 'mapbox://styles/khaihern/ckxjzd7zc0qar14o1a3ubj1i4',
+  //style: 'mapbox://styles/khaihern/ckxjzd7zc0qar14o1a3ubj1i4',
+  style: 'mapbox://styles/khaihern/clbzp8ri6001o15peogfztip7',
   center: [40.346, 33.428],
   zoom: 2
 });
