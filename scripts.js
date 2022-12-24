@@ -556,7 +556,7 @@ const uiController = (() => {
         }
 
         document.querySelector(DOMstrings.media).style.backgroundImage = `url(https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png)`;
-        document.querySelector(DOMstrings.mediaCTA).setAttribute('href', `https://scratch.mit.edu/projects/${projectId}/fullscreen/`);
+        document.querySelector(DOMstrings.mediaCTA).parentElement.setAttribute('href', `https://scratch.mit.edu/projects/${projectId}/fullscreen/`);
       }, 1000);
     },
 

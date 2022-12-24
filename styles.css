@@ -35,6 +35,17 @@ h3 {
   right: 10px;
 }
 
+/* Move the sidebar to the bottom for smaller screen size */
+@media screen and (max-width: 800px) {
+  #sidebar {
+    position: absolute;
+    left: 0; right: 0;
+    width: 100%;
+    top: 60%;
+    padding: 0 10px;
+  }
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 *::-webkit-scrollbar {
   display: none;
@@ -212,6 +223,7 @@ h3 {
 /* **************** Photos Stack **************** */
 
 .photos {
+  position: relative;
   width: 100%;
   height: 240px;
   padding: 0;
