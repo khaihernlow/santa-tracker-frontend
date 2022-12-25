@@ -68,6 +68,9 @@ const santaController = (() => {
           geometry: {
             type: 'Point',
             coordinates: [lng, lat],
+            properties: {
+              'marker-size': 'small'
+            }
           },
         },
       ],
@@ -555,7 +558,7 @@ const uiController = (() => {
           document.querySelector(DOMstrings.mediaCTA).innerHTML = 'play_arrow';
         }
 
-        document.querySelector(DOMstrings.media).style.backgroundImage = `url(https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png)`;
+        document.querySelector(DOMstrings.media).style.backgroundImage = `radial-gradient(circle, transparent, rgba(0, 0, 0, 0.3)), url(https://cdn2.scratch.mit.edu/get_image/project/${projectId}_480x360.png)`;
         document.querySelector(DOMstrings.mediaCTA).parentElement.setAttribute('href', `https://scratch.mit.edu/projects/${projectId}/fullscreen/`);
       }, 1000);
     },
@@ -591,7 +594,7 @@ const uiController = (() => {
 
     animateSanta: (santaMarker, currLat, currLng) => {
       function animate(timestamp) {
-        let radius = 2;
+        let radius = 1;
         santaMarker.setLngLat([currLng, Math.sin(timestamp / 500) * (radius / map.getZoom()) + currLat]);
         //santaMarker.addTo(map);
         requestAnimationFrame(() => {
@@ -645,7 +648,9 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoia2hhaWhlcm4iLCJhIjoiY2t4ajczaTVtMnBoazJva3k4c
 let map = new mapboxgl.Map({
   container: 'map',
   //style: 'mapbox://styles/khaihern/ckxjzd7zc0qar14o1a3ubj1i4',
-  style: 'mapbox://styles/khaihern/clbzp8ri6001o15peogfztip7',
+  //style: 'mapbox://styles/khaihern/clbzp8ri6001o15peogfztip7', //prod
+  //style: 'mapbox://styles/khaihern/clc2sozid002q15qibgox0lp4/draft',
+  style: 'mapbox://styles/khaihern/clc2sozid002q15qibgox0lp4',
   center: [40.346, 33.428],
   zoom: 2
 });
