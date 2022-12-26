@@ -4,6 +4,7 @@ const santaController = (() => {
   let locationResponse, locationData;
 
   let currDate = new Date();
+  // daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
   daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
 
   // calculate differences between two time
@@ -149,12 +150,12 @@ const santaController = (() => {
     },
 
     findArrTime: async () => {
-      let response, closestLocation, closestLocDistance;
+      let response, data, closestLocation, closestLocDistance;
       response = await fetch('https://ipgeolocation.abstractapi.com/v1/?api_key=4b552c45f7c7415db90b58a7e20ee6c0');
       data = await response.json();
 
-      lat = data['latitude'];
-      lng = data['longitude'];
+      let lat = data['latitude'];
+      let lng = data['longitude'];
       //console.log(lat + ',' + lng)
 
       closestLocDistance = '';
@@ -163,7 +164,7 @@ const santaController = (() => {
         return (this * Math.PI) / 180;
       };
 
-      for (i = 1; i < routeData.length; i++) {
+      for (let i = 1; i < routeData.length; i++) {
         let lat2 = routeData[i]['location']['lat'];
         let lon2 = routeData[i]['location']['lng'];
         let lat1 = lat;
@@ -224,7 +225,7 @@ const santaController = (() => {
       }
       plotCoords(0);
 
-      for (i = 1; i < routeData.length; i++) {
+      for (let i = 1; i < routeData.length; i++) {
         addArrival = addDays(new Date(routeData[i]['arrival']), daysAdding);
         addDeparture = addDays(new Date(routeData[i]['departure']), daysAdding);
         if (Date.parse(currTime) < Date.parse(addArrival)) {
@@ -232,7 +233,7 @@ const santaController = (() => {
           
           //Grab photos
           photos = [];
-          routeData[i - 1]['details']['photos'].forEach((el) => {
+          routeData[i]['details']['photos'].forEach((el) => {
             photos.push(el['url']);
           });
           
@@ -271,7 +272,7 @@ const santaController = (() => {
           // setViewBox(routeData[i]['location']['lat'], routeData[i]['location']['lng']);
           return santaPos;
         }
-        plotCoords(i);
+        plotCoords(i + 1);
         //if before arrival
         //return status
         //else if before departure
@@ -302,6 +303,7 @@ const santaController = (() => {
           photos
         );
       } else if (santaPos.currMode == 'Pitstop') {
+        plotCoords(santaPos.orderID);
         addArrival = addDays(new Date(routeData[santaPos.orderID + 1]['arrival']), daysAdding);
 
         //Grab photos
@@ -323,15 +325,19 @@ const santaController = (() => {
     },
 
     getSantaMarker: () => {
-      return { currMarker, currLat, currLng };
+      return { currMarker, 
+              currLat, 
+              currLng, 
+              previousLatitude: routeData[santaPos.orderID - 1]['location']['lat'], 
+              previousLongitude: routeData[santaPos.orderID - 1]['location']['lng']};
     },
 
     drawRecentRoute: (orderID) => {
       let coordinates = [];
       let coordinatePair = [];
 
-      for (i = 0; i < 20; i++) {
-        coordinatePair = [routeData[orderID - i]['location']['lng'], routeData[orderID - i]['location']['lat']];
+      for (let i = 0; i < 20; i++) {
+        coordinatePair = [routeData[orderID - 1 - i]['location']['lng'], routeData[orderID - 1 - i]['location']['lat']];
         coordinates.push(coordinatePair);
       }
 
@@ -394,6 +400,50 @@ const santaController = (() => {
         },
       });
     },
+
+    getEquidistantCoordinates: () => {
+      // Convert numeric degrees to radians
+      Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+      }
+
+      // Convert radians to numeric degrees
+      Number.prototype.toDeg = function() {
+        return this * 180 / Math.PI;
+      }
+
+      // n is the number of points created for every second
+      const n = Math.abs((new Date(santaPos.timeNext).getTime() - addDays(routeData[santaPos.orderID - 1]['departure'], daysAdding)) / 1000);
+
+      const startCoords = routeData[santaPos.orderID - 1]['location'];
+      const endCoords = routeData[santaPos.orderID]['location'];
+
+      console.log(startCoords);
+      console.log(endCoords);
+      const points = [];
+      const R = 6371; // radius of Earth in kilometers
+      const dLat = (endCoords.lat - startCoords.lat).toRad();
+      const dLon = (endCoords.lng - startCoords.lng).toRad();
+      const lat1 = startCoords.lat.toRad();
+      const lat2 = endCoords.lat.toRad();
+  
+      for (let i = 0; i <= n; i++) {
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2) *
+                  Math.cos(lat1) * Math.cos(lat2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const d = R * c * 1000; // distance in meters
+        const fraction = i / n;
+        const lat3 = lat1 + fraction * dLat;
+        const lon3 = startCoords.lng.toRad() + fraction * dLon;
+        points.push({
+          lat: lat3.toDeg(),
+          lng: lon3.toDeg()
+        });
+      }
+  
+      return points;
+    }
   };
 })();
 
@@ -418,7 +468,22 @@ const uiController = (() => {
     mediaCTA: '.media__cta'
   };
 
-  const countDown = (endDate, domString) => {
+  let bounce = false; //animating the santa up and down
+
+  const countDown = (endDate, domString, pointsAlongRoute, santaLocation) => {
+    
+    let santaAutoTrack = true;
+    //if it's counting down the time at a pitstop
+    if (domString == 'timeValues' && pointsAlongRoute.length == 0) {
+      bounce = true;
+      uiController.animateSanta(santaLocation.currMarker, santaLocation.currLat, santaLocation.currLng, santaLocation.previousLatitude, santaLocation.previousLongitude);
+    } else if (domString == 'timeValues') {
+      map.on('dragstart', function() {
+        console.log('Drag started');
+        santaAutoTrack = false;
+      });
+    }
+
     return new Promise((resolve, reject) => {
       let countDownDate = new Date(endDate);
       let x = setInterval(() => {
@@ -434,6 +499,13 @@ const uiController = (() => {
         let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        //if it's counting down the time when it's airborne
+        if (domString == 'timeValues' && pointsAlongRoute.length != 0) {
+          bounce = false;
+          uiController.animateSanta(santaLocation.currMarker, pointsAlongRoute[pointsAlongRoute.length - 1 - Math.floor(Math.abs((countDownDate - now)) / 1000)]['lat'], pointsAlongRoute[pointsAlongRoute.length - 1 - Math.floor(Math.abs((countDownDate - now) / 1000))]['lng'], santaLocation.previousLatitude, santaLocation.previousLongitude, santaAutoTrack);
+        }
+
         //console.log(seconds)
         minutes = (minutes < 10 ? '0' : '') + minutes;
         seconds = (seconds < 10 ? '0' : '') + seconds;
@@ -447,17 +519,7 @@ const uiController = (() => {
         } else if (domString == 'routeValues') {
           document.querySelector(DOMstrings.routeValues).innerHTML = `${hours} Hours ${minutes} Minutes`;
         }
-        // if (minutes < 1 && hours < 1 && domString == 'routeValues') {
-        //   //console.log('over');
-        //   resolve('done');
-        //   clearInterval(x);
-        // }
 
-        // if (seconds < 1 && minutes < 1 && hours < 1) {
-        //   //console.log('over');
-        //   resolve('done');
-        //   clearInterval(x);
-        // }
         if (distance <= 0) {
           resolve('done');
           clearInterval(x);
@@ -473,14 +535,14 @@ const uiController = (() => {
   };
 
   return {
-    updateRoute: async (santaPos) => {
+    updateRoute: async (santaPos, pointsAlongRoute, santaLocation) => {
       document.querySelector(DOMstrings.headerLoc).innerHTML = `${santaPos.prevLocation}, ${santaPos.region}`;
 
       if (santaPos.currMode == 'Airborne') {
         document.querySelector(DOMstrings.modeLabels).innerHTML = 'Heading To';
         document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.nextLocation;
         document.querySelector(DOMstrings.timeLabels).innerHTML = 'Arriving In';
-        await countDown(santaPos.timeNext, 'timeValues');
+        await countDown(santaPos.timeNext, 'timeValues', pointsAlongRoute, santaLocation);
         //console.log('after');
         return;
       } else if (santaPos.currMode == 'Pitstop') {
@@ -488,7 +550,7 @@ const uiController = (() => {
         document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.prevLocation;
         document.querySelector(DOMstrings.timeLabels).innerHTML = 'Departing In';
         document.querySelector(DOMstrings.timeValues).innerHTML = 'No Data';
-        await countDown(santaPos.timeNext, 'timeValues');
+        await countDown(santaPos.timeNext, 'timeValues', [], santaLocation);
         //console.log('after pitstop');
         return;
       }
@@ -527,7 +589,7 @@ const uiController = (() => {
       //Changing the image of the photos cards
       let photoCards = document.querySelector(DOMstrings.photosList).childNodes;
       let photoIndex = 0;
-      for (i = 0; i < photoCards.length; i++) {
+      for (let i = 0; i < photoCards.length; i++) {
         if (photoCards[i].nodeName.toLowerCase() == 'li') {
           photoCards[i].style.backgroundImage = `url(${santaPos.photos[photoIndex]})`;
           photoIndex += 1;
@@ -592,16 +654,110 @@ const uiController = (() => {
       return total;
     },
 
-    animateSanta: (santaMarker, currLat, currLng) => {
-      function animate(timestamp) {
-        let radius = 1;
-        santaMarker.setLngLat([currLng, Math.sin(timestamp / 500) * (radius / map.getZoom()) + currLat]);
-        //santaMarker.addTo(map);
-        requestAnimationFrame(() => {
-          uiController.animateSanta(santaMarker, currLat, currLng);
-        });
+    animateSanta: (santaMarker, currLat, currLng, previousLatitude, previousLongitude, santaAutoTrack) => {
+      if (bounce) {
+        let currRouteData;
+        if (!map.getLayer('currRoute')) {
+          currRouteData = {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: '',
+                geometry: {
+                  type: 'LineString',
+                  coordinates: [[currLng, currLat], [previousLongitude, previousLatitude]],
+                },
+              },
+            ],
+          };
+
+          map.addSource('currRouteSource', { type: 'geojson', data: currRouteData });
+
+          map.addLayer({
+            id: 'currRoute',
+            type: 'line',
+            source: 'currRouteSource',
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round',
+            },
+            paint: {
+              'line-color': '#39AA59',
+              'line-width': 2,
+            },
+          });
+        }
+
+        function animate(timestamp) {
+          let radius = 1;
+          santaMarker.setLngLat([currLng, Math.sin(timestamp / 500) * (radius / map.getZoom()) + currLat]);
+          //santaMarker.addTo(map);
+          requestAnimationFrame(() => {
+            if (bounce == true) { //stop animating up and down when it's airborne (bounce set to false)
+              uiController.animateSanta(santaMarker, currLat, currLng);
+            }
+          });
+        }
+        requestAnimationFrame(animate);
+      } else {
+        if (currLat != undefined && currLng != undefined) {
+          santaMarker.setLngLat([currLng, currLat]);
+          
+          let currRouteData;
+          
+          if (!map.getLayer('currRoute')) {
+            currRouteData = {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: '',
+                  geometry: {
+                    type: 'LineString',
+                    coordinates: [[currLng, currLat], [previousLongitude, previousLatitude]],
+                  },
+                },
+              ],
+            };
+
+            map.addSource('currRouteSource', { type: 'geojson', data: currRouteData });
+
+            map.addLayer({
+              id: 'currRoute',
+              type: 'line',
+              source: 'currRouteSource',
+              layout: {
+                'line-join': 'round',
+                'line-cap': 'round',
+              },
+              paint: {
+                'line-color': '#39AA59',
+                'line-width': 2,
+              },
+            });
+          } else {
+            //console.log(currRouteData);
+            //currRouteData.features[0].geometry.coordinates = [[currLng, currLat], [previousLongitude, previousLatitude]];
+            map.getSource('currRouteSource').setData({
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  properties: '',
+                  geometry: {
+                    type: 'LineString',
+                    coordinates: [[currLng, currLat], [previousLongitude, previousLatitude]],
+                  },
+                },
+              ]
+            });
+            if (santaAutoTrack) {
+              map.panTo([currLng, currLat])
+            }
+          }
+        }
       }
-      requestAnimationFrame(animate);
     },
   };
 })();
@@ -620,6 +776,13 @@ const controller = (async (santaCtrl, uiCtrl) => {
   });
 
   santaPos = await santaCtrl.getSantaPos(); // get santa position
+
+  let pointsAlongRoute;
+  if (santaPos.currMode == 'Airborne') {
+    pointsAlongRoute = santaCtrl.getEquidistantCoordinates();
+    console.log(pointsAlongRoute);
+  }
+
   uiCtrl.updateStatus(santaPos);
   uiCtrl.updatePhotos(santaPos);
   uiCtrl.updateMedia();
@@ -634,10 +797,16 @@ const controller = (async (santaCtrl, uiCtrl) => {
   }, 2000);
 
   while (true) {
-    santaLocation = santaCtrl.getSantaMarker();
-    uiCtrl.animateSanta(santaLocation.currMarker, santaLocation.currLat, santaLocation.currLng);
-    await uiCtrl.updateRoute(santaPos);
+    let santaLocation = santaCtrl.getSantaMarker();
+    //uiCtrl.animateSanta(santaLocation.currMarker, santaLocation.currLat, santaLocation.currLng);
+    await uiCtrl.updateRoute(santaPos, pointsAlongRoute, santaLocation);
     await santaCtrl.getNextPos();
+
+    if (santaPos.currMode == 'Airborne') {
+      pointsAlongRoute = santaCtrl.getEquidistantCoordinates();
+      console.log(pointsAlongRoute);
+    }
+
     uiCtrl.updateStatus(santaPos);
     uiCtrl.updatePhotos(santaPos);
     santaCtrl.drawRecentRoute(santaPos.orderID);
@@ -654,8 +823,8 @@ let map = new mapboxgl.Map({
   center: [40.346, 33.428],
   zoom: 2
 });
+
 // Add zoom and rotation controls to the map.
 map.addControl(new mapboxgl.NavigationControl(), 'top-left');
 map.dragRotate.disable(); // disable map rotation using right click + drag
 map.touchZoomRotate.disableRotation(); // disable map rotation using touch rotation gesture
-
