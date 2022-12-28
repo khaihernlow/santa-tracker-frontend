@@ -93,7 +93,7 @@ const plotCoords = async (index) => {
 
     if (prevLat !== undefined) {
         let desc = locationData[index]['extract'];
-        let scratchUsers = locationData[index]['scratchUsers'];
+        //let scratchUsers = locationData[index]['scratchUsers'];
 
         // function to shorten a string to 3 lines
         function truncate(str, n, useWordBoundary) {
@@ -104,18 +104,26 @@ const plotCoords = async (index) => {
             return (useWordBoundary ? subString.substr(0, subString.lastIndexOf(' ')) : subString) + '&hellip;';
         }
 
+        // const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnMove: true }).setHTML(
+        //     `<div class="locationPopup__photo" style="background-image: url(${photoUrl});"></div><div class="locationPopup__content"><h2 class="locationPopup__name">${city}, ${region}</h2><h3 class="locationPopup__desc">${truncate(
+        //         desc,
+        //         120,
+        //         true
+        //     )}</h3><h2 class="locationPopup__usersLabel">Scratchers in the Region:</h2><div class="locationPopup__users">
+        //   <a href="https://scratch.mit.edu/users/${scratchUsers[0]['username']}" target="_blank"><img title="${scratchUsers[0]['username']}" class="locationPopup__user" src="${scratchUsers[0].profileIcon}" alt="${scratchUsers[0]['username']}"></a>
+        //   <a href="https://scratch.mit.edu/users/${scratchUsers[1]['username']}" target="_blank"><img title="${scratchUsers[1]['username']}" class="locationPopup__user" src="${scratchUsers[1].profileIcon}" alt="${scratchUsers[1]['username']}"></a>
+        //   <a href="https://scratch.mit.edu/users/${scratchUsers[2]['username']}" target="_blank"><img title="${scratchUsers[2]['username']}" class="locationPopup__user" src="${scratchUsers[2].profileIcon}" alt="${scratchUsers[2]['username']}"></a>
+        //   <a href="https://scratch.mit.edu/users/${scratchUsers[3]['username']}" target="_blank"><img title="${scratchUsers[3]['username']}" class="locationPopup__user" src="${scratchUsers[3].profileIcon}" alt="${scratchUsers[3]['username']}"></a>
+        //   <a href="https://scratch.mit.edu/users/${scratchUsers[4]['username']}" target="_blank"><img title="${scratchUsers[4]['username']}" class="locationPopup__user" src="${scratchUsers[4].profileIcon}" alt="${scratchUsers[4]['username']}"></a>
+        // </div></div>`
+        // );
+
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnMove: true }).setHTML(
             `<div class="locationPopup__photo" style="background-image: url(${photoUrl});"></div><div class="locationPopup__content"><h2 class="locationPopup__name">${city}, ${region}</h2><h3 class="locationPopup__desc">${truncate(
                 desc,
                 120,
                 true
-            )}</h3><h2 class="locationPopup__usersLabel">Scratchers in the Region:</h2><div class="locationPopup__users">
-          <a href="https://scratch.mit.edu/users/${scratchUsers[0]['username']}" target="_blank"><img title="${scratchUsers[0]['username']}" class="locationPopup__user" src="${scratchUsers[0].profileIcon}" alt="${scratchUsers[0]['username']}"></a>
-          <a href="https://scratch.mit.edu/users/${scratchUsers[1]['username']}" target="_blank"><img title="${scratchUsers[1]['username']}" class="locationPopup__user" src="${scratchUsers[1].profileIcon}" alt="${scratchUsers[1]['username']}"></a>
-          <a href="https://scratch.mit.edu/users/${scratchUsers[2]['username']}" target="_blank"><img title="${scratchUsers[2]['username']}" class="locationPopup__user" src="${scratchUsers[2].profileIcon}" alt="${scratchUsers[2]['username']}"></a>
-          <a href="https://scratch.mit.edu/users/${scratchUsers[3]['username']}" target="_blank"><img title="${scratchUsers[3]['username']}" class="locationPopup__user" src="${scratchUsers[3].profileIcon}" alt="${scratchUsers[3]['username']}"></a>
-          <a href="https://scratch.mit.edu/users/${scratchUsers[4]['username']}" target="_blank"><img title="${scratchUsers[4]['username']}" class="locationPopup__user" src="${scratchUsers[4].profileIcon}" alt="${scratchUsers[4]['username']}"></a>
-        </div></div>`
+            )}</h3></div>`
         );
 
         prevMarker = new mapboxgl.Marker({ color: '#D85748', scale: 0.75, cursor: 'pointer' })
