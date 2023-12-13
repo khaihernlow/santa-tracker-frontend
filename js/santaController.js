@@ -4,7 +4,7 @@ let currTime, santaPos, trackerData, routeData, daysAdding;
 let prevMarker, currMarker, prevLat, prevLng, currLat, currLng;
 let locationResponse, locationData;
 
-let currDate = new Date();
+let currDate = new Date(1703412000000); //Set this date to Christams Eve
 // daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
 daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
 
@@ -153,13 +153,17 @@ class SantaController {
         return;
     }
 
+    async getTakeoffTime() {
+        return currDate;
+    }
+
     async findArrTime() {
         let response, data, closestLocation, closestLocDistance;
-        response = await fetch('https://ipgeolocation.abstractapi.com/v1/?api_key=4b552c45f7c7415db90b58a7e20ee6c0');
+        response = await fetch('https://api.ip2location.io/?key=1AD9240F42C4AC76E925121D1F3CF620');
         data = await response.json();
 
-        let lat = data['latitude'];
-        let lng = data['longitude'];
+        let lat = Number(data['latitude']);
+        let lng = Number(data['longitude']);
 
         closestLocDistance = '';
 
@@ -205,7 +209,7 @@ class SantaController {
         // check if santa departed
         if (Date.parse(currTime) < Date.parse(addDeparture)) {
             let timeToTakeoff = calcTimeDiff(Date.parse(currTime), Date.parse(addDeparture));
-            //console.log(`Santa has not take off yet! Santa will takeoff in ${timeToTakeoff} minutes`);
+            //console.log(`Santa has not take off yet! Santa will takeoff in ${timeToTakeoff} seconds`);
 
             //Grab photos
             photos = [];
@@ -217,7 +221,7 @@ class SantaController {
                 routeData[0]['city'],
                 routeData[0]['city'],
                 routeData[0]['region'],
-                'Pitstop',
+                'Preflight',
                 Date.parse(addDeparture),
                 0,
                 routeData[0]['presentsDelivered'],

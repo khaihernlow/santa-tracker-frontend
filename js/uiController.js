@@ -1,6 +1,7 @@
 import map from './map.js';
 
 const DOMstrings = {
+    routeLabels: '.route__labels',
     routeValues: '.route__values',
     modeLabels: '.mode__labels',
     modeValues: '.mode__values',
@@ -48,6 +49,7 @@ const countDown = (endDate, domString, pointsAlongRoute, santaLocation, animateS
             }
 
             let distance = countDownDate - now;
+            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
             let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
@@ -68,7 +70,14 @@ const countDown = (endDate, domString, pointsAlongRoute, santaLocation, animateS
                     document.querySelector(DOMstrings.timeValues).innerHTML = `${hours}:${minutes}:${seconds}`;
                 }
             } else if (domString == 'routeValues') {
-                if (hours < 1) {
+                if (days > 1) { //Preflight mode
+                    document.querySelector(DOMstrings.routeValues).innerHTML = `${days} Days`;
+                    if (hours > 1) {
+                        document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${hours} Hours`);
+                    } else {
+                        document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${minutes} Minutes`);
+                    }
+                } else if (hours < 1) { //Pitstop & Airborne mode
                     document.querySelector(DOMstrings.routeValues).innerHTML = `${minutes} Minutes`;
                 } else {
                     document.querySelector(DOMstrings.routeValues).innerHTML = `${hours} Hours ${minutes} Minutes`;
@@ -114,6 +123,11 @@ class UiController {
             document.querySelector(DOMstrings.timeValues).innerHTML = 'No Data';
             await countDown(santaPos.timeNext, 'timeValues', [], santaLocation, this.animateSanta);
             return;
+        } else if (santaPos.currMode == 'Preflight') {
+            document.querySelector(DOMstrings.modeLabels).innerHTML = 'Home';
+            document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.prevLocation;
+            document.querySelector(DOMstrings.timeLabels).innerHTML = 'Departing';
+            document.querySelector(DOMstrings.timeValues).innerHTML = 'Rudolph\'s Runway';
         }
     }
 
@@ -199,6 +213,11 @@ class UiController {
             timeString = `${hour}:${minute} ${timeOfDay}`;
             document.querySelector(DOMstrings.headerTime).innerHTML = timeString;
         }, 1000);
+    }
+
+    async updateTakeOffTime(takeoffTime) {
+        document.querySelector(DOMstrings.routeLabels).innerHTML = 'Santa Takes Off In...';
+        await countDown(takeoffTime, 'routeValues');
     }
 
     async updateArrTime(arrTime) {
