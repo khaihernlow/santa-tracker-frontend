@@ -70,7 +70,7 @@ const countDown = (endDate, domString, pointsAlongRoute, santaLocation, animateS
                     document.querySelector(DOMstrings.timeValues).innerHTML = `${hours}:${minutes}:${seconds}`;
                 }
             } else if (domString == 'routeValues') {
-                if (days > 1) { //Preflight mode
+                if (days > 0) { //Preflight mode
                     document.querySelector(DOMstrings.routeValues).innerHTML = `${days} Days`;
                     if (hours > 1) {
                         document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${hours} Hours`);
