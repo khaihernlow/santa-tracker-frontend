@@ -159,7 +159,7 @@ class SantaController {
 
     async findArrTime() {
         let response, data, closestLocation, closestLocDistance;
-        response = await fetch('https://api.ip2location.io/?key=1AD9240F42C4AC76E925121D1F3CF620');
+        response = await fetch('https://ipapi.co/json/');
         data = await response.json();
 
         let lat = Number(data['latitude']);
