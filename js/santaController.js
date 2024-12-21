@@ -6,7 +6,7 @@ let locationResponse, locationData;
 
 let villageLocation = {"lat": 84, "lng": 168};
 
-let currDate = new Date(1734688800000); //Set this date to Christams Eve, currently Dec 24th 2023 5:00:00 AM EST
+let currDate = new Date(1735034400000); //Set this date to Christams Eve, currently Dec 24th 2024 5:00:00 AM EST
 daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 (original date from API) to upcoming Christmas Eve
 
 /**
@@ -171,7 +171,7 @@ class SantaController {
                     type: 'Feature',
                     geometry: {
                         type: 'Point',
-                        coordinates: [168, 84],
+                        coordinates: [villageLocation['lng'], villageLocation['lat']],
                         properties: {
                             'marker-size': 'small'
                         }
@@ -188,6 +188,10 @@ class SantaController {
         new mapboxgl.Marker(markerElement)
             .setLngLat(geojson.features[0].geometry.coordinates)
             .addTo(map);
+
+        if (santaPos.currMode == 'Preflight') {
+            map.panTo([villageLocation['lng'], villageLocation['lat']])
+        }
     };
 
     async getTakeoffTime() {
