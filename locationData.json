@@ -6,7 +6,7 @@
   },
   {
     "id": "provideniya",
-    "extract": "Provideniya is an urban locality and the administrative center of Providensky District of Chukotka Autonomous Okrug, Russia, located on Komsomolskaya Bay in the northeastern part of the autonomous okrug, across the Bering Strait from Alaska, and very close to the International Date Line.",
+    "extract": "Provideniya is so close to Alaska that on a clear day, you can see the United States from the city.",
     "scratchUsers": [
       {
         "username": "RedCuzImAwesome",
@@ -42,7 +42,7 @@
   },
   {
     "id": "anadyr",
-    "extract": "Anadyr ",
+    "extract": "Anadyr is one of the coldest cities in the world, with temperatures often dropping below freezing for most of the year.",
     "scratchUsers": [
       {
         "username": "RedCuzImAwesome",
@@ -78,7 +78,7 @@
   },
   {
     "id": "petropavlovsk-kamchatsky",
-    "extract": "Petropavlovsk-Kamchatsky is a city and the administrative, industrial, scientific, and cultural center of Kamchatka Krai, Russia.",
+    "extract": "Surrounded by 29 active volcanoes, Petropavlovsk-Kamchatsky is one of the most volcanically active cities on Earth.",
     "scratchUsers": [
       {
         "username": "RedCuzImAwesome",
@@ -114,7 +114,7 @@
   },
   {
     "id": "bikini",
-    "extract": "Bikini Atoll, sometimes known as Eschscholtz Atoll between the 1800s and 1946, is a coral reef in the Marshall Islands consisting of 23 islands surrounding a 229.4-square-mile central lagoon.",
+    "extract": "Bikini Atoll is a coral reef in the Marshall Islands consisting of 23 islands surrounding a 229.4-sq-mile lagoon.",
     "scratchUsers": [
       {
         "username": "NN0717",
@@ -3076,7 +3076,7 @@
   },
   {
     "id": "kuala_lumpur",
-    "extract": "Kuala Lumpur, officially the Federal Territory of Kuala Lumpur and colloquially referred to as KL, is a federal territory and the capital city of Malaysia.",
+    "extract": "Kuala Lumpur is home to the Petronas Towers, once the world's tallest twin towers, boasting impressive architecture.",
     "scratchUsers": [
       {
         "username": "ThatHammerkind",

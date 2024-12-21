@@ -6,7 +6,8 @@ let map = new mapboxgl.Map({
   //style: 'mapbox://styles/khaihern/clc2sozid002q15qibgox0lp4/draft',
   style: 'mapbox://styles/khaihern/clc2sozid002q15qibgox0lp4',
   center: [40.346, 33.428],
-  zoom: 2
+  zoom: 2,
+  minZoom: 2,
 });
 
 // Add zoom and rotation controls to the map.

@@ -4,25 +4,35 @@ let currTime, santaPos, trackerData, routeData, daysAdding;
 let prevMarker, currMarker, prevLat, prevLng, currLat, currLng;
 let locationResponse, locationData;
 
-let currDate = new Date(1703412000000); //Set this date to Christams Eve
-// daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
-daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 to today
+let villageLocation = {"lat": 84, "lng": 168};
 
-// calculate differences between two time
+let currDate = new Date(1734688800000); //Set this date to Christams Eve, currently Dec 24th 2023 5:00:00 AM EST
+daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 (original date from API) to upcoming Christmas Eve
+
+/**
+ * Calculates the absolute difference between two times in seconds.
+ * @param {Date} time1 - The first time.
+ * @param {Date} time2 - The second time.
+ * @returns {number} The absolute difference in seconds.
+ */
 const calcTimeDiff = (time1, time2) => {
-    let diff = time1 - time2;
-    diff = Math.abs(diff);
-    diff = Math.floor(diff / 1000);
-    return diff;
+    const diff = Math.abs(time1 - time2);
+    return Math.floor(diff / 1000);
 };
 
-// create a function that add number of days to a date
+/**
+ * Adds a specified number of days to a date.
+ * @param {Date} date - The original date.
+ * @param {number} days - The number of days to add.
+ * @returns {Date} The new date.
+ */
 const addDays = (date, days) => {
-    let result = new Date(date);
+    const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
 };
 
+// The current position of Santa
 santaPos = {
     prevLocation: '',
     nextLocation: '',
@@ -46,8 +56,8 @@ const updateSantaPos = (prevLocation, nextLocation, region, currMode, timeNext, 
 };
 
 const plotCoords = async (index) => {
-    let lat = routeData[index]['location']['lat'],
-        lng = routeData[index]['location']['lng'],
+    let lat = index == 0 ? 84 : routeData[index - 1]['location']['lat'],
+        lng = index == 0 ? 168 : routeData[index - 1]['location']['lng'],
         city = routeData[index > 0 ? (index -= 1) : (index = 0)]['city'],
         region = routeData[index]['region'],
         photoUrl = routeData?.[index]?.['details']?.['photos']?.[0]?.['url'];
@@ -127,7 +137,7 @@ const plotCoords = async (index) => {
         );
 
         prevMarker = new mapboxgl.Marker({ color: '#D85748', scale: 0.75, cursor: 'pointer' })
-            .setLngLat([routeData[index]['location']['lng'], routeData[index]['location']['lat']])
+            .setLngLat([lng, lat])
             .setPopup(popup)
             .addTo(map);
     }
@@ -152,6 +162,33 @@ class SantaController {
         locationData = await locationResponse.json();
         return;
     }
+
+    plotSantaVillage = () => {
+        const geojson = {
+            type: 'FeatureCollection',
+            features: [
+                {
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [168, 84],
+                        properties: {
+                            'marker-size': 'small'
+                        }
+                    },
+                },
+            ],
+        };
+    
+        const markerElement = document.createElement('div');
+        markerElement.className = 'santaVillage';
+        markerElement.style.width = '100px';
+        markerElement.style.height = '100px';
+
+        new mapboxgl.Marker(markerElement)
+            .setLngLat(geojson.features[0].geometry.coordinates)
+            .addTo(map);
+    };
 
     async getTakeoffTime() {
         return currDate;
@@ -329,12 +366,14 @@ class SantaController {
     }
 
     getSantaMarker() {
+        let data = routeData[santaPos.orderID - 1];
+
         return {
             currMarker,
             currLat,
             currLng,
-            previousLatitude: routeData[santaPos.orderID - 1]['location']['lat'],
-            previousLongitude: routeData[santaPos.orderID - 1]['location']['lng']
+            previousLatitude: data?.location?.lat,
+            previousLongitude: data?.location?.lng,
         };
     }
 
@@ -342,10 +381,21 @@ class SantaController {
         let coordinates = [];
         let coordinatePair = [];
 
-        for (let i = 0; i < 20; i++) {
-            coordinatePair = [routeData[orderID - 1 - i]['location']['lng'], routeData[orderID - 1 - i]['location']['lat']];
+        const limit = orderID < 20 ? orderID : 20;
+
+        for (let i = 0; i < limit; i++) {
+            let lat = routeData[orderID - 1 - i]['location']['lat']
+            let lng = routeData[orderID - 1 - i]['location']['lng']
+            if (orderID - 1 - i != 0) {
+                let prevLng = routeData[orderID - 1 - i - 1]['location']['lng']
+                lng += lng - prevLng > 180 ? -360 : 
+                    prevLng - lng > 180 ? 360 : 0;
+            }
+
+            coordinatePair = orderID - 1 - i == 0 ? [villageLocation.lng, villageLocation.lat] : [lng, lat];
             coordinates.push(coordinatePair);
         }
+        console.log(coordinates);
 
         const geojson = {
             type: 'FeatureCollection',
@@ -424,31 +474,33 @@ class SantaController {
         // n is the number of points created for every second
         const n = Math.abs((new Date(santaPos.timeNext).getTime() - addDays(routeData[santaPos.orderID - 1]['departure'], daysAdding)) / 1000);
 
-        const startCoords = routeData[santaPos.orderID - 1]['location'];
-        const endCoords = routeData[santaPos.orderID]['location'];
+        const startCoords = santaPos.orderID == 1 ? villageLocation : routeData[santaPos.orderID - 1]['location'];
+        let endCoords = routeData[santaPos.orderID]['location'];
+        
+        endCoords.lng += endCoords.lng - startCoords.lng > 180 ? -360 : 
+            startCoords.lng - endCoords.lng > 180 ? 360 : 0;
 
         const points = [];
         const R = 6371; // radius of Earth in kilometers
-        const dLat = (endCoords.lat - startCoords.lat).toRad();
-        const dLon = (endCoords.lng - startCoords.lng).toRad();
-        const lat1 = startCoords.lat.toRad();
-        const lat2 = endCoords.lat.toRad();
+        const dLat = endCoords.lat - startCoords.lat;
+        const dLon = endCoords.lng - startCoords.lng;
+
+        console.log("start coords:  lat: " + startCoords.lat + " lng: " + startCoords.lng)
+        console.log("end coords:  lat: " + endCoords.lat + " lng: " + endCoords.lng)
+        console.log(dLat);
+        console.log(dLon)
 
         for (let i = 0; i <= n; i++) {
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + 
-                Math.sin(dLon / 2) * Math.sin(dLon / 2) *
-                Math.cos(lat1) * Math.cos(lat2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const d = R * c * 1000; // distance in meters
             const fraction = i / n;
-            const lat3 = lat1 + fraction * dLat;
-            const lon3 = startCoords.lng.toRad() + fraction * dLon;
+            const lat3 = startCoords.lat + fraction * dLat;
+            const lon3 = startCoords.lng + fraction * dLon;
             points.push({
-                lat: lat3.toDeg(),
-                lng: lon3.toDeg()
+                lat: lat3,
+                lng: lon3
             });
         }
 
+        console.log(points);
         return points;
     }
 }

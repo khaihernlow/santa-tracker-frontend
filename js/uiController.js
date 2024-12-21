@@ -1,5 +1,6 @@
 import map from './map.js';
 
+// DOM elements used in the UI
 const DOMstrings = {
     routeLabels: '.route__labels',
     routeValues: '.route__values',
@@ -8,6 +9,7 @@ const DOMstrings = {
     timeLabels: '.time__labels',
     timeValues: '.time__values',
     santaStatus: '.santaStatus',
+    santaVillage: '.santaVillage',
     giftsCount: '.giftsCount',
     scratcherValues: '.scratcher-values',
     scratcherList: '.scratcher-list',
@@ -27,38 +29,43 @@ const countDown = (endDate, domString, pointsAlongRoute, santaLocation, animateS
 
     let santaAutoTrack = true;
     //if it's counting down the time at a pitstop
-    if (domString == 'timeValues' && pointsAlongRoute.length == 0) {
-        bounce = true;
-
-        //call animateSanta function
-        animateSanta(santaLocation.currMarker, santaLocation.currLat, santaLocation.currLng, santaLocation.previousLatitude, santaLocation.previousLongitude);
-    } else if (domString == 'timeValues') {
-        map.on('dragstart', function () {
-            santaAutoTrack = false;
-        });
+    if (domString === 'timeValues') {
+        if (pointsAlongRoute.length === 0) {
+            bounce = true;
+            animateSanta(santaLocation.currMarker, 
+                        santaLocation.currLat, 
+                        santaLocation.currLng, 
+                        santaLocation.previousLatitude, 
+                        santaLocation.previousLongitude);
+        } else {
+            map.on('dragstart', function () {
+                santaAutoTrack = false;
+            });
+        }
     }
 
     return new Promise((resolve, reject) => {
         let countDownDate = new Date(endDate);
-        let x = setInterval(() => {
-            let now = new Date().getTime();
+        const x = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
 
-            if (domString == 'routeValues' && countDownDate.getTime() < now) {
+            if (domString === 'routeValues' && distance <= 0) {
                 resolve('done');
                 clearInterval(x);
             }
 
-            let distance = countDownDate - now;
-            let days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            let hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            //if it's counting down the time when it's airborne
+            if (domString === 'timeValues' && pointsAlongRoute.length !== 0) {
+                bounce = false;
+                const lastPointIndex = pointsAlongRoute.length - 1 - Math.floor(Math.abs(distance) / 1000);
+                animateSanta(santaLocation.currMarker, pointsAlongRoute[lastPointIndex]['lat'], pointsAlongRoute[lastPointIndex]['lng'], santaLocation.previousLatitude, santaLocation.previousLongitude, santaAutoTrack);
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             let seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            //if it's counting down the time when it's airborne
-            if (domString == 'timeValues' && pointsAlongRoute.length != 0) {
-                bounce = false;
-                animateSanta(santaLocation.currMarker, pointsAlongRoute[pointsAlongRoute.length - 1 - Math.floor(Math.abs((countDownDate - now)) / 1000)]['lat'], pointsAlongRoute[pointsAlongRoute.length - 1 - Math.floor(Math.abs((countDownDate - now) / 1000))]['lng'], santaLocation.previousLatitude, santaLocation.previousLongitude, santaAutoTrack);
-            }
 
             minutes = (minutes < 10 ? '0' : '') + minutes;
             seconds = (seconds < 10 ? '0' : '') + seconds;
@@ -72,13 +79,14 @@ const countDown = (endDate, domString, pointsAlongRoute, santaLocation, animateS
             } else if (domString == 'routeValues') {
                 if (days > 0) { //Preflight mode
                     document.querySelector(DOMstrings.routeValues).innerHTML = `${days} Days`;
-                    if (hours > 1) {
-                        document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${hours} Hours`);
-                    } else {
-                        document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${minutes} Minutes`);
-                    }
-                } else if (hours < 1) { //Pitstop & Airborne mode
-                    document.querySelector(DOMstrings.routeValues).innerHTML = `${minutes} Minutes`;
+                    
+                    hours > 1
+                    ? document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${hours} Hours`)
+                    : document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${minutes} Minutes`);
+                } else if (hours < 1) {
+                    minutes < 1
+                    ? document.querySelector(DOMstrings.routeValues).innerHTML = `${seconds} Seconds`
+                    : document.querySelector(DOMstrings.routeValues).innerHTML = `${minutes} Minutes`;
                 } else {
                     document.querySelector(DOMstrings.routeValues).innerHTML = `${hours} Hours ${minutes} Minutes`;
                 }
@@ -111,12 +119,14 @@ class UiController {
         document.querySelector(DOMstrings.headerLoc).innerHTML = `${santaPos.prevLocation}, ${santaPos.region}`;
 
         if (santaPos.currMode == 'Airborne') {
+            document.querySelector(DOMstrings.routeLabels).innerHTML = 'Santa Will Arrive In...';
             document.querySelector(DOMstrings.modeLabels).innerHTML = 'Heading To';
             document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.nextLocation;
             document.querySelector(DOMstrings.timeLabels).innerHTML = 'Arriving In';
             await countDown(santaPos.timeNext, 'timeValues', pointsAlongRoute, santaLocation, this.animateSanta);
             return;
         } else if (santaPos.currMode == 'Pitstop') {
+            document.querySelector(DOMstrings.routeLabels).innerHTML = 'Santa Will Arrive In...';
             document.querySelector(DOMstrings.modeLabels).innerHTML = 'Current Stop';
             document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.prevLocation;
             document.querySelector(DOMstrings.timeLabels).innerHTML = 'Departing In';
@@ -124,10 +134,12 @@ class UiController {
             await countDown(santaPos.timeNext, 'timeValues', [], santaLocation, this.animateSanta);
             return;
         } else if (santaPos.currMode == 'Preflight') {
+            document.querySelector(DOMstrings.routeLabels).innerHTML = 'Santa Takes Off In...';
             document.querySelector(DOMstrings.modeLabels).innerHTML = 'Home';
             document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.prevLocation;
             document.querySelector(DOMstrings.timeLabels).innerHTML = 'Departing';
             document.querySelector(DOMstrings.timeValues).innerHTML = 'Rudolph\'s Runway';
+            await countDown(santaPos.timeNext, 'routeValues', [], santaLocation, this.animateSanta);
         }
     }
 
@@ -146,34 +158,32 @@ class UiController {
     }
 
     updatePhotos(santaPos) {
-        //Clear out all the previous photos
-        document.querySelector(DOMstrings.photosList).innerHTML = ' ';
-
-        //For each photos in list, add a card to the html, not to exceed 4 cards
-        let new_li = document.createElement('li');
-        new_li.className = 'photos__card';
-        santaPos.photos.every((el, index) => {
-            document.querySelector(DOMstrings.photosList).appendChild(new_li.cloneNode(true));
-            if (index == 3) {
-                return false;
-            } else {
-                return true;
-            }
-        });
-
-        //Changing the image of the photos cards
-        let photoCards = document.querySelector(DOMstrings.photosList).childNodes;
-        let photoIndex = 0;
+        const photosList = document.querySelector(DOMstrings.photosList);
+        const photoCity = document.querySelector(DOMstrings.photoCity);
+    
+        // Clear out all the previous photos
+        photosList.innerHTML = '';
+    
+        // Add a maximum of 4 photo cards to the HTML
+        for (let index = 0; index < Math.min(santaPos.photos.length, 4); index++) {
+            const newLi = document.createElement('li');
+            newLi.className = 'photos__card';
+            photosList.appendChild(newLi);
+        }
+    
+        // Change the image of the photo cards
+        const photoCards = photosList.childNodes;
         for (let i = 0; i < photoCards.length; i++) {
-            if (photoCards[i].nodeName.toLowerCase() == 'li') {
-                photoCards[i].style.backgroundImage = `url(${santaPos.photos[photoIndex]})`;
-                photoIndex += 1;
+            if (photoCards[i].nodeName.toLowerCase() === 'li') {
+                photoCards[i].style.backgroundImage = `url(${santaPos.photos[i]})`;
             }
         }
-
-        //Write the location of the photos
-        document.querySelector(DOMstrings.photoCity).innerHTML = `${santaPos.currMode == 'Pitstop' ? santaPos.prevLocation : santaPos.nextLocation}`;
+    
+        // Write the location of the photos
+        const location = (santaPos.currMode === 'Pitstop') ? santaPos.prevLocation : santaPos.nextLocation;
+        photoCity.innerHTML = location;
     }
+    
 
     updateMedia() {
         setInterval(() => {
@@ -202,18 +212,16 @@ class UiController {
 
     updateTime() {
         setInterval(() => {
-            let time, hour, minute, timeOfDay, timeString;
-            time = new Date();
-            hour = time.getHours();
-            minute = time.getMinutes();
-            minute = (minute < 10 ? '0' : '') + minute;
-            timeOfDay = hour < 12 ? 'AM' : 'PM';
-            hour = hour > 12 ? hour - 12 : hour;
-            hour = hour == 0 ? 12 : hour;
-            timeString = `${hour}:${minute} ${timeOfDay}`;
-            document.querySelector(DOMstrings.headerTime).innerHTML = timeString;
+            const time = new Date();
+            let hour = time.getHours();
+            hour = (hour > 12) ? (hour - 12) : (hour === 0 ? 12 : hour);
+            const minute = (time.getMinutes() < 10 ? '0' : '') + time.getMinutes();
+            const timeOfDay = hour < 12 ? 'AM' : 'PM';
+
+            document.querySelector(DOMstrings.headerTime).innerHTML = `${hour}:${minute} ${timeOfDay}`;
         }, 1000);
     }
+    
 
     async updateTakeOffTime(takeoffTime) {
         document.querySelector(DOMstrings.routeLabels).innerHTML = 'Santa Takes Off In...';
@@ -232,6 +240,11 @@ class UiController {
             DOMstrings.giftsCount
         ).innerHTML = `<span class="material-icons">redeem</span><h1>${total.toLocaleString('en-US')}</h1>`; // separate thousands with commas
         return total;
+    }
+
+    createSantaVillage() {
+        console.log('creating santa village');
+        document.querySelector(DOMstrings.santaVillage).classList.add('santa_village');
     }
 
     animateSanta = (santaMarker, currLat, currLng, previousLatitude, previousLongitude, santaAutoTrack) => {

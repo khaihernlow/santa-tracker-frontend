@@ -90,6 +90,12 @@ h3 {
   background-repeat: no-repeat;
 }
 
+.santa_village {
+  background-image: url('/images/santa_village.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 .giftsCount {
   position: absolute;
   top: 105px;
