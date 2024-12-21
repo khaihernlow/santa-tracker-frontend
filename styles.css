@@ -427,3 +427,130 @@ h3 {
   background-color: #fff;
   color: #C01313;
 }
+
+/* **************** Preflight Countdown **************** */
+
+.countdown-container {
+  display: none;
+  background: linear-gradient(135deg, #2b874c, #36a95f);
+  color: white;
+  padding: 18px 10px 10px 10px;
+  border-radius: 0 0 7px 7px;
+  text-align: center;
+  max-width: 800px;
+  margin: 2rem auto;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.countdown-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background: repeating-linear-gradient(
+    45deg,
+    #C01313,
+    #C01313 10px,
+    #ffffff 10px,
+    #ffffff 20px
+  );
+}
+
+.countdown {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 0 auto;
+}
+
+.countdown__segment {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  min-width: 90px;
+  min-height: 90px;
+  backdrop-filter: blur(5px);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.countdown__segment:hover {
+  transform: translateY(-5px);
+}
+
+.number {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #FFEECF;
+  letter-spacing: 2px;
+  display: block;
+}
+
+.short-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #fff;
+  letter-spacing: 2px;
+  display: none;
+}
+
+@media (max-width: 800px) {
+  .countdown-container {
+    z-index: -1;
+    top: 0;
+    right: 0;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    width: auto;
+    max-width: 120px;
+    margin: 0;
+    padding: 10px;
+    background: unset;
+    box-shadow: unset;
+  }
+
+  .countdown {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .countdown__segment {
+    min-width: 70px;
+    min-height: 70px;
+  }
+
+  .number {
+    font-size: 1.5rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .short-label { 
+    display: block;
+    font-size: 0.7rem;
+  }
+
+  .countdown-container::before {
+    display: none;
+  }
+}

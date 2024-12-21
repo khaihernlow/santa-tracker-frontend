@@ -4,6 +4,7 @@ import map from './map.js';
 const DOMstrings = {
     routeLabels: '.route__labels',
     routeValues: '.route__values',
+    routeHr: '#route__hr',
     modeLabels: '.mode__labels',
     modeValues: '.mode__values',
     timeLabels: '.time__labels',
@@ -20,7 +21,12 @@ const DOMstrings = {
     photoCity: '.photos__location',
     media: '.media',
     mediaLabels: '.media__labels',
-    mediaCTA: '.media__cta'
+    mediaCTA: '.media__cta',
+    countdownContainer: '.countdown-container',
+    countdownDays: '#countdown__days',
+    countdownHours: '#countdown__hours',
+    countdownMinutes: '#countdown__minutes',
+    countdownSeconds: '#countdown__seconds',
 };
 
 let bounce = false; //animating the santa up and down
@@ -77,19 +83,11 @@ const countDown = (endDate, domString, pointsAlongRoute, santaLocation, animateS
                     document.querySelector(DOMstrings.timeValues).innerHTML = `${hours}:${minutes}:${seconds}`;
                 }
             } else if (domString == 'routeValues') {
-                if (days > 0) { //Preflight mode
-                    document.querySelector(DOMstrings.routeValues).innerHTML = `${days} Days`;
-                    
-                    hours > 1
-                    ? document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${hours} Hours`)
-                    : document.querySelector(DOMstrings.routeValues).insertAdjacentHTML('beforeend', ` and ${minutes} Minutes`);
-                } else if (hours < 1) {
-                    minutes < 1
-                    ? document.querySelector(DOMstrings.routeValues).innerHTML = `${seconds} Seconds`
-                    : document.querySelector(DOMstrings.routeValues).innerHTML = `${minutes} Minutes`;
-                } else {
-                    document.querySelector(DOMstrings.routeValues).innerHTML = `${hours} Hours ${minutes} Minutes`;
-                }
+                //Preflight mode
+                document.querySelector(DOMstrings.countdownDays).innerHTML = days.toString().padStart(2, '0');
+                document.querySelector(DOMstrings.countdownHours).innerHTML = hours.toString().padStart(2, '0');
+                document.querySelector(DOMstrings.countdownMinutes).innerHTML = minutes.toString().padStart(2, '0');
+                document.querySelector(DOMstrings.countdownSeconds).innerHTML = seconds.toString().padStart(2, '0');
             }
 
             if (distance <= 0) {
@@ -134,12 +132,21 @@ class UiController {
             await countDown(santaPos.timeNext, 'timeValues', [], santaLocation, this.animateSanta);
             return;
         } else if (santaPos.currMode == 'Preflight') {
-            document.querySelector(DOMstrings.routeLabels).innerHTML = 'Santa Takes Off In...';
+            document.querySelector(DOMstrings.countdownContainer).style.display = 'block';
+            document.querySelector(DOMstrings.routeLabels).style.display = 'none';
+            document.querySelector(DOMstrings.routeValues).style.display = 'none';
+            document.querySelector(DOMstrings.routeHr).style.display = 'none';
+
             document.querySelector(DOMstrings.modeLabels).innerHTML = 'Home';
             document.querySelector(DOMstrings.modeValues).innerHTML = santaPos.prevLocation;
             document.querySelector(DOMstrings.timeLabels).innerHTML = 'Departing';
             document.querySelector(DOMstrings.timeValues).innerHTML = 'Rudolph\'s Runway';
             await countDown(santaPos.timeNext, 'routeValues', [], santaLocation, this.animateSanta);
+
+            document.querySelector(DOMstrings.countdownContainer).style.display = 'none';
+            document.querySelector(DOMstrings.routeLabels).style.display = 'block';
+            document.querySelector(DOMstrings.routeValues).style.display = 'block';
+            document.querySelector(DOMstrings.routeHr).style.display = 'block';
         }
     }
 
