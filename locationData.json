@@ -11433,7 +11433,7 @@
   },
   {
     "id": "orlando",
-    "extract": "Orlando is a city in the U.S. state of Florida and is the county seat of Orange County.",
+    "extract": "Orlando is home to more than 100 lakes, including Lake Eola, which is actually a giant sinkhole. Disney World in Orlando covers 43 square miles, about the same size as San Francisco.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -11469,7 +11469,7 @@
   },
   {
     "id": "atlanta",
-    "extract": "Atlanta is the capital and most populous city of the U.S. state of Georgia.",
+    "extract": "Atlanta's nickname, \"Hotlanta,\" reflects both its warm weather and thriving music scene.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -11541,7 +11541,7 @@
   },
   {
     "id": "raleigh",
-    "extract": "Raleigh is the capital of the state of North Carolina and the seat of Wake County in the United States.",
+    "extract": "Raleigh is part of the Research Triangle. The city is named after Sir Walter Raleigh, who sponsored early English colonies in America.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -11829,7 +11829,7 @@
   },
   {
     "id": "new_york",
-    "extract": "New York, often called New York City to distinguish it from New York State, or NYC for short, is the most populous city in the United States.",
+    "extract": "Times Square in New York City, NYC for short, is nicknamed \"The Crossroads of the World\" and is visited by over 50 million people annually.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -11937,7 +11937,7 @@
   },
   {
     "id": "boston",
-    "extract": "Boston, officially the City of Boston, is the capital and most populous city of the Commonwealth of Massachusetts in the United States and 24th-most populous city in the country.",
+    "extract": "Boston's Fenway Park is the oldest Major League Baseball stadium still in use, opening in 1912. The Boston Common is the oldest public park in the U.S., dating back to 1634.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12333,7 +12333,7 @@
   },
   {
     "id": "detroit",
-    "extract": "Detroit is the largest and most populous city in the U.S. state of Michigan, the largest U.S. city on the United States-Canada border, and the county seat of Wayne County.",
+    "extract": "Detroit is known as the \"Motor City\" for its historic role in automotive manufacturing. It’s also the birthplace of Motown, a genre that shaped American music.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12369,7 +12369,7 @@
   },
   {
     "id": "sandusky",
-    "extract": "Sandusky /sænˈdʌskiː/ is a city in the U.S. state of Ohio and the county seat of Erie County.",
+    "extract": "Sandusky is famous for Cedar Point, the \"Roller Coaster Capital of the World.\"",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12441,7 +12441,7 @@
   },
   {
     "id": "indianapolis",
-    "extract": "Indianapolis, colloquially known as Indy, is the state capital and most-populous city of the U.S. state of Indiana and the seat of Marion County.",
+    "extract": "Indianapolis, colloquially known as Indy, hosts one of the most famous car races in the world - the Indy 500.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12477,7 +12477,7 @@
   },
   {
     "id": "santa_claus",
-    "extract": "Santa Claus, also known as Father Christmas, Saint Nicholas, Saint Nick, Kris Kringle, or simply Santa, is a legendary character originating in Eastern Christian culture who is said to bring children gifts on Christmas Eve of toys and candy or coal or nothing, depending on whether they are \"naughty or nice\".",
+    "extract": "Santa Claus receives thousands of letters addressed to Santa every Christmas season.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12549,7 +12549,7 @@
   },
   {
     "id": "nashville",
-    "extract": "Nashville is the capital and most populous city of the U.S. state of Tennessee.",
+    "extract": "Known as \"Music City,\" Nashville is home to the Grand Ole Opry, the world’s longest-running live radio show. Elvis Presley recorded over 200 songs at RCA Studio B in Nashville.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12585,7 +12585,7 @@
   },
   {
     "id": "st_louis",
-    "extract": "St. Louis is the second-largest city in Missouri, United States.",
+    "extract": "St. Louis is famous for the Gateway Arch, the tallest man-made monument in the U.S. It symbolizes the city's role as the “Gateway to the West” during America's expansion.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12909,7 +12909,7 @@
   },
   {
     "id": "new_orleans",
-    "extract": "New Orleans is a consolidated city-parish located along the Mississippi River in the southeastern region of the U.S. state of Louisiana.",
+    "extract": "New Orleans is the birthplace of jazz, with legends like Louis Armstrong hailing from the city.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12945,7 +12945,7 @@
   },
   {
     "id": "jackson",
-    "extract": "Jackson may refer to:",
+    "extract": "Jackson is called the \"City with Soul\" for its rich history in gospel, blues, and jazz music.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -12981,7 +12981,7 @@
   },
   {
     "id": "fayetteville",
-    "extract": "Fayetteville may refer to:",
+    "extract": "Fayetteville hosts the stunning Botanical Garden of the Ozarks, a popular community spot.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13017,7 +13017,7 @@
   },
   {
     "id": "cedar_rapids",
-    "extract": "Cedar Rapids is the second-largest city in Iowa, United States and is the county seat of Linn County.",
+    "extract": "Cedar Rapids is the second-largest city in Iowa, nicknamed the \"City of Five Seasons\" for its focus on enjoying life year-round.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13053,7 +13053,7 @@
   },
   {
     "id": "chicago",
-    "extract": "Chicago, officially the City of Chicago, is the most populous city in the U.S. state of Illinois, and the third-most populous city in the United States, following New York City and Los Angeles.",
+    "extract": "Chicago is the birthplace of the skyscraper; the first one was built in 1885 and was only 10 stories tall. The city dyes the Chicago River green every St. Patrick’s Day—a tradition since 1962.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13089,7 +13089,7 @@
   },
   {
     "id": "milwaukee",
-    "extract": "Milwaukee is the largest city in the U.S. state of Wisconsin, and the fifth-largest city in the Midwestern United States.",
+    "extract": "Milwaukee is known as the “Brew City” for its rich history in beer brewing. It's also the fifth-largest city in the Midwestern United States.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13125,7 +13125,7 @@
   },
   {
     "id": "minneapolis",
-    "extract": "Minneapolis is a city in the U.S. state of Minnesota.",
+    "extract": "Minneapolis is home to the iconic Spoonbridge and Cherry sculpture in the Walker Art Center’s Sculpture Garden. The city is also known for its chain of lakes, perfect for year-round outdoor activities.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13269,7 +13269,7 @@
   },
   {
     "id": "lincoln",
-    "extract": "Lincoln most commonly refers to:",
+    "extract": "Lincoln is home to the Sunken Gardens, ranked among the best public gardens in the U.S.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13305,7 +13305,7 @@
   },
   {
     "id": "lawrence",
-    "extract": "Lawrence may refer to:",
+    "extract": "Lawrence is known for its vibrant arts scene and the University of Kansas, nicknamed \"Rock Chalk Jayhawk.\"",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13377,7 +13377,7 @@
   },
   {
     "id": "dallas",
-    "extract": "Dallas, colloquially referred to as Big D, is a city in the U.S. state of Texas and the largest city in and seat of Dallas County, with portions extending into Collin, Denton, Kaufman and Rockwall counties.",
+    "extract": "Dallas, colloquially referred to as Big D, is where the frozen margarita machine was invented, revolutionizing how the drink is served. The city also boasts a thriving arts scene, including the largest urban arts district in the U.S.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13665,7 +13665,7 @@
   },
   {
     "id": "roswell",
-    "extract": "The Roswell incident is the 1947 recovery of balloon debris from a ranch near Corona, New Mexico by United States Army Air Forces officers from Roswell Army Air Field, and the conspiracy theories, decades later, claiming that the debris involved a flying saucer and that the truth had been covered up by the United States government.",
+    "extract": "Roswell is famous for UFO sightings and the International UFO Museum and Research Center.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -13737,7 +13737,7 @@
   },
   {
     "id": "boulder",
-    "extract": "In geology, a boulder is a rock fragment with size greater than 256 millimetres in diameter.",
+    "extract": "Boulder consistently ranks as one of the happiest cities in the U.S. Its stunning Flatirons make it a favorite destination for hiking and rock climbing enthusiasts.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14097,7 +14097,7 @@
   },
   {
     "id": "salt_lake_city",
-    "extract": "Salt Lake City is the capital and most populous city of the U.S. state of Utah, as well as the seat of Salt Lake County, the most populous county in Utah.",
+    "extract": "Salt Lake City hosted the 2002 Winter Olympics, earning global recognition for its outdoor recreation. It's also home to the Great Salt Lake, the largest saltwater lake in the Western Hemisphere.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14133,7 +14133,7 @@
   },
   {
     "id": "phoenix",
-    "extract": "Phoenix most often refers to:",
+    "extract": "Phoenix holds the title of the sunniest city in the world, enjoying over 300 sunny days a year. Its desert landscape also makes it a hub for outdoor activities like hiking.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14169,7 +14169,7 @@
   },
   {
     "id": "tucson",
-    "extract": "Tucson is a city in and the county seat of Pima County, Arizona, United States, and is home to the University of Arizona.",
+    "extract": "Tucson is home to Saguaro National Park, which protects the iconic giant cacti of the Southwest.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14205,7 +14205,7 @@
   },
   {
     "id": "san_diego",
-    "extract": "San Diego is a city in the U.S. state of California on the coast of the Pacific Ocean and immediately adjacent to the Mexican border.",
+    "extract": "San Diego is a city in California on the coast of the Pacific Ocean. The city has the most farms of any U.S. city, with over 7,000 farms.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14241,7 +14241,7 @@
   },
   {
     "id": "los_angeles",
-    "extract": "Los Angeles, commonly referred to by the initialism L.A., is the largest city in California.",
+    "extract": "Los Angeles, L.A., is the largest city in California. The Hollywood sign originally read \"Hollywoodland\" when it was erected in 1923.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14277,7 +14277,7 @@
   },
   {
     "id": "las_vegas",
-    "extract": "Las Vegas, often known simply as Vegas, is the 26th-most populous city in the United States, the most populous city in the state of Nevada, and the county seat of Clark County.",
+    "extract": "Las Vegas is often called “The Entertainment Capital of the World” and has over 150,000 hotel rooms. The Strip isn’t actually in the city of Las Vegas—it's in Paradise, Nevada.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14349,7 +14349,7 @@
   },
   {
     "id": "san_francisco",
-    "extract": "San Francisco, officially the City and County of San Francisco, is a cultural, commercial, and financial center in the U.S. state of California.",
+    "extract": "The Golden Gate Bridge isn’t actually golden—it’s painted “International Orange” for visibility in fog. San Francisco has more dogs than children!",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14385,7 +14385,7 @@
   },
   {
     "id": "redding",
-    "extract": "Otis Ray Redding Jr.",
+    "extract": "Redding's Sundial Bridge is a massive working sundial and a modern architectural marvel.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14421,7 +14421,7 @@
   },
   {
     "id": "eugene",
-    "extract": "Eugene may refer to:",
+    "extract": "Eugene is nicknamed \"TrackTown USA\" for its deep ties to running and athletic innovation.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14457,7 +14457,7 @@
   },
   {
     "id": "portland",
-    "extract": "Portland most commonly refers to:",
+    "extract": "Portland is nicknamed the \"City of Roses\" due to its ideal climate for growing the flower. It even hosts an annual Rose Festival featuring parades and events.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14493,7 +14493,7 @@
   },
   {
     "id": "tacoma",
-    "extract": "Tacoma is a mid-sized urban port city and the county seat of Pierce County, Washington, United States.",
+    "extract": "Tacoma is known for its stunning Museum of Glass, featuring works by world-renowned artists.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14529,7 +14529,7 @@
   },
   {
     "id": "seattle",
-    "extract": "Seattle is a seaport city on the West Coast of the United States.",
+    "extract": "Seattle is a seaport city. Starbucks was founded there in 1971, making it the birthplace of the coffee chain.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
@@ -14673,7 +14673,7 @@
   },
   {
     "id": "anchorage",
-    "extract": "Anchorage is a unified municipal consolidated city-borough in the U.S. state of Alaska, on the West Coast of the United States.",
+    "extract": "Anchorage is home to nearly 100,000 glaciers, offering breathtaking views year-round. It's also one of the best places in the world to see the Northern Lights.",
     "scratchUsers": [
       {
         "username": "Will_Wam",
