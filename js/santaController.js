@@ -56,8 +56,8 @@ const updateSantaPos = (prevLocation, nextLocation, region, currMode, timeNext, 
 };
 
 const plotCoords = async (index) => {
-    let lat = index == 0 ? 84 : routeData[index - 1]['location']['lat'],
-        lng = index == 0 ? 168 : routeData[index - 1]['location']['lng'],
+    let lat = routeData[index]['location']['lat'],
+        lng = routeData[index]['location']['lng'],
         city = routeData[index > 0 ? (index -= 1) : (index = 0)]['city'],
         region = routeData[index]['region'],
         photoUrl = routeData?.[index]?.['details']?.['photos']?.[0]?.['url'];
@@ -131,7 +131,7 @@ const plotCoords = async (index) => {
         const popup = new mapboxgl.Popup({ offset: 25, closeButton: false, closeOnMove: true }).setHTML(
             `<div class="locationPopup__photo" style="background-image: url(${photoUrl});"></div><div class="locationPopup__content"><h2 class="locationPopup__name">${city}, ${region}</h2><h3 class="locationPopup__desc">${truncate(
                 desc,
-                120,
+                150,
                 true
             )}</h3></div>`
         );
@@ -297,7 +297,7 @@ class SantaController {
                 plotCoords(i);
                 //setViewBox(routeData[i]['location']['lat'], routeData[i]['location']['lng']);
                 return santaPos;
-            } else if (Date.parse(currTime) < Date.parse(addDeparture)) {
+            } else if ((Date.parse(currTime) < Date.parse(addDeparture)) && i < routeData.length - 1) {
                 //console.log(`Santa is currently at ${routeData[i]['city']} delivering presents`);
 
                 //Grab photos
@@ -319,7 +319,20 @@ class SantaController {
                 // setViewBox(routeData[i]['location']['lat'], routeData[i]['location']['lng']);
                 return santaPos;
             }
-            plotCoords(i + 1);
+            if (i < routeData.length - 1) {
+                plotCoords(i + 1);
+            } else {
+                updateSantaPos(
+                    routeData[0]['city'],
+                    routeData[0]['city'],
+                    routeData[0]['region'],
+                    'Landing',
+                    Date.parse(addDeparture),
+                    i + 1,
+                    routeData[i]['presentsDelivered'],
+                    photos,
+                )
+            }
         }
     }
 
