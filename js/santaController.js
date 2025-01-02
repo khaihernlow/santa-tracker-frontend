@@ -6,7 +6,7 @@ let locationResponse, locationData;
 
 let villageLocation = {"lat": 84, "lng": 168};
 
-let currDate = new Date(1735034400000); //Set this date to Christams Eve, currently Dec 24th 2024 5:00:00 AM EST
+let currDate = new Date(1766570400000); //Set this date to Christams Eve, currently Dec 24th 2025 5:00:00 AM EST
 daysAdding = Math.floor(new Date(currDate.getTime() - new Date(1577181600000).getTime()) / (1000 * 3600 * 24)); // number of days from dec 24th 2019 (original date from API) to upcoming Christmas Eve
 
 /**
